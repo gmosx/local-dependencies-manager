@@ -9,33 +9,34 @@ interface Dependency {
     path: string
 }
 
-function getLocalDependencies(path: string) {
+function getLocalDependencies(path: string): Array<Dependency> {
     const json = fs.readFileSync(path)
     const data = JSON.parse(json)
 
-    function filterLocalDependencies(map: any) {
-        const deps: Array<Dependency> = []
-        for (let name in map) {
-            if (map[name].startsWith('file:')) {
-                deps.push({name, path: map[name].substr(5)})
+    function filterLocalDependencies(dependenciesDef: any): Array<Dependency> {
+        const dependencies: Array<Dependency> = []
+        for (let name of Object.keys(dependenciesDef)) {
+            const url = dependenciesDef[name]
+            if (url.startsWith('file:')) {
+                dependencies.push({name, path: url.substr(5)})
             }
         }
-        return deps
+        return dependencies
     }
 
     return [].concat(filterLocalDependencies(data.dependencies))
              .concat(filterLocalDependencies(data.devDependencies))
 }
 
-function handleDependencyChange(name: string, path: string) {
+function handleDependencyChange(name: string, path: string): void {
     console.log(`'${name}' changed!`)
     exec(`npm install ${path}`)
 }
 
-function main() {
-    const deps = getLocalDependencies('package.json')
+function main(): void {
+    const dependencies = getLocalDependencies('package.json')
 
-    for (let {path, name} of deps) {
+    for (let {path, name} of dependencies) {
         watch.watchTree(path, handleDependencyChange.bind(this, name, path))
     }
 }
