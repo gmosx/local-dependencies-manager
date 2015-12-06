@@ -13,6 +13,7 @@
   "author": "George Moschovitis <george.moschovitis@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "commander": "^2.9.0",
     "watch": "^0.16.0"
   }
 }

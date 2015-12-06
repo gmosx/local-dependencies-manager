@@ -3,6 +3,7 @@
 const fs = require('fs')
 const exec = require('child_process').exec
 const watch = require('watch')
+const cli = require('commander')
 
 interface Dependency {
     name: string
@@ -28,16 +29,28 @@ function getLocalDependencies(path: string): Array<Dependency> {
              .concat(filterLocalDependencies(data.devDependencies))
 }
 
-function handleDependencyChange(name: string, path: string): void {
-    console.log(`'${name}' changed!`)
-    exec(`npm install ${path}`)
+function installDependency(dependency: Dependency): void {
+    console.log(`Installing '${dependency.name}'.`)
+    exec(`npm install ${dependency.path}`)
 }
 
 function main(): void {
+    cli.version('1.0.0')
+            .option('-w, --watch', 'watch mode')
+            .parse(process.argv)
+
     const dependencies = getLocalDependencies('package.json')
 
-    for (let {path, name} of dependencies) {
-        watch.watchTree(path, handleDependencyChange.bind(this, name, path))
+    if (cli.watch) {
+        for (let d of dependencies) {
+            console.log(`Watching ${d.path}.`)
+            watch.watchTree(d.path, installDependency.bind(this, d))
+        }
+    } else {
+        for (let d of dependencies) {
+            installDependency(d)
+        }
+        process.exit()
     }
 }
 
