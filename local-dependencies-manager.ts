@@ -34,6 +34,15 @@ function installDependency(dependency: Dependency): void {
     exec(`npm install ${dependency.path}`)
 }
 
+function watchDependency(dependency: Dependency): void {
+    console.log(`Watching ${dependency.path}.`)
+    watch.watchTree(dependency.path, handleTreeChange.bind(this, dependency))
+}
+
+function handleTreeChange(dependency: Dependency) {
+    installDependency(dependency)
+}
+
 function main(): void {
     cli.version('1.0.0')
             .option('-w, --watch', 'watch mode')
@@ -42,14 +51,9 @@ function main(): void {
     const dependencies = getLocalDependencies('package.json')
 
     if (cli.watch) {
-        for (let d of dependencies) {
-            console.log(`Watching ${d.path}.`)
-            watch.watchTree(d.path, installDependency.bind(this, d))
-        }
+        dependencies.forEach(watchDependency)
     } else {
-        for (let d of dependencies) {
-            installDependency(d)
-        }
+        dependencies.forEach(installDependency)
         process.exit()
     }
 }
