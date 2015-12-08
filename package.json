@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["dependencies", "tools"],
   "author": "George Moschovitis <george.moschovitis@gmail.com>",
   "license": "ISC",
   "dependencies": {
