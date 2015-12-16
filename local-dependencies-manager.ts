@@ -48,7 +48,7 @@ function handleTreeChange(dependency: Dependency) {
 }
 
 function main(): void {
-    cli.version('1.0.1')
+    cli.version('1.0.2')
             .option('-w, --watch', 'watch mode')
             .parse(process.argv)
 

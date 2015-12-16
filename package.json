@@ -1,6 +1,6 @@
 {
   "name": "local-dependencies-manager",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Manages local package dependencies",
   "main": "index.js",
   "bin": {
