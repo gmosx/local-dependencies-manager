@@ -10,16 +10,20 @@ interface Dependency {
     path: string
 }
 
+const filePrefix = 'file://'
+
 function getLocalDependencies(path: string): Array<Dependency> {
     const json = fs.readFileSync(path)
     const data = JSON.parse(json)
 
     function filterLocalDependencies(dependenciesDef: any): Array<Dependency> {
         const dependencies: Array<Dependency> = []
-        for (let name of Object.keys(dependenciesDef)) {
-            const url = dependenciesDef[name]
-            if (url.startsWith('file:')) {
-                dependencies.push({name, path: url.substr(5)})
+        if (dependenciesDef) {
+            for (let name of Object.keys(dependenciesDef)) {
+                const url = dependenciesDef[name]
+                if (url.startsWith(filePrefix)) {
+                    dependencies.push({name, path: url.substr(filePrefix.length)})
+                }
             }
         }
         return dependencies
@@ -30,7 +34,7 @@ function getLocalDependencies(path: string): Array<Dependency> {
 }
 
 function installDependency(dependency: Dependency): void {
-    console.log(`Installing '${dependency.name}'.`)
+    console.log(`Installing '${dependency.name}' (${dependency.path}).`)
     exec(`npm install ${dependency.path}`)
 }
 
@@ -44,7 +48,7 @@ function handleTreeChange(dependency: Dependency) {
 }
 
 function main(): void {
-    cli.version('1.0.0')
+    cli.version('1.0.1')
             .option('-w, --watch', 'watch mode')
             .parse(process.argv)
 
